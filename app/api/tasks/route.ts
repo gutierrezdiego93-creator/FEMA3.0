@@ -5,8 +5,9 @@ export async function GET() {
   try {
     const token = await getFracttalToken();
 
+    // Endpoint correcto: tareas pendientes con activo, fecha, atraso, etc.
     const response = await fetch(
-      `https://app.fracttal.com/api/tasks/?limit=200&start=0`,
+      `https://app.fracttal.com/api/tasks_todo/?limit=200`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
