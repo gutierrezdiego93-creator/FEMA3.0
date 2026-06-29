@@ -5,11 +5,20 @@ import { FracttalTask } from "@/lib/types";
 import TaskCard from "@/components/TaskCard";
 import TaskDetail from "@/components/TaskDetail";
 
+type FilterType = "all" | "overdue" | "planned" | "unplanned";
+
+function isOverdue(task: FracttalTask): boolean {
+  if (task.delay && task.delay > 0) return true;
+  if (!task.date_maintenance) return false;
+  return new Date(task.date_maintenance) < new Date();
+}
+
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<FracttalTask[]>([]);
   const [filtered, setFiltered] = useState<FracttalTask[]>([]);
   const [selectedTask, setSelectedTask] = useState<FracttalTask | null>(null);
   const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -27,7 +36,6 @@ export default function DashboardPage() {
       const taskList: FracttalTask[] = data.data || data || [];
       taskList.sort((a, b) => b.id - a.id);
       setTasks(taskList);
-      setFiltered(taskList);
       setLastUpdated(new Date());
     } catch (err) {
       setError("No se pudieron cargar las tareas. Verifica la conexion con Fracttal.");
@@ -37,36 +45,50 @@ export default function DashboardPage() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+  useEffect(() => { fetchTasks(); }, [fetchTasks]);
 
   useEffect(() => {
     const interval = setInterval(() => fetchTasks(true), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchTasks]);
 
+  // Aplicar filtro activo + búsqueda
   useEffect(() => {
-    if (!search.trim()) {
-      setFiltered(tasks);
-      return;
+    let result = [...tasks];
+
+    // Filtro por tipo
+    if (activeFilter === "overdue") {
+      result = result.filter((t) => isOverdue(t));
+    } else if (activeFilter === "planned") {
+      result = result.filter((t) => !!t.id_group_task);
+    } else if (activeFilter === "unplanned") {
+      result = result.filter((t) => !t.id_group_task);
     }
-    const q = search.toLowerCase();
-    setFiltered(
-      tasks.filter(
+
+    // Filtro por búsqueda
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
         (t) =>
           t.item_description?.toLowerCase().includes(q) ||
           t.task_description?.toLowerCase().includes(q) ||
           t.description?.toLowerCase().includes(q) ||
           t.code?.toLowerCase().includes(q) ||
           t.location_description?.toLowerCase().includes(q)
-      )
-    );
-  }, [search, tasks]);
+      );
+    }
 
-  const overdueCount = tasks.filter((t) => t.delay > 0).length;
+    setFiltered(result);
+  }, [search, tasks, activeFilter]);
+
+  const overdueCount = tasks.filter((t) => isOverdue(t)).length;
   const plannedCount = tasks.filter((t) => !!t.id_group_task).length;
   const unplannedCount = tasks.filter((t) => !t.id_group_task).length;
+
+  const handleFilter = (filter: FilterType) => {
+    setActiveFilter(prev => prev === filter ? "all" : filter);
+    setSelectedTask(null);
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#f1f5f9" }}>
@@ -83,102 +105,33 @@ export default function DashboardPage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div
-            style={{
-              background: "#1e40af",
-              color: "white",
-              fontWeight: 800,
-              fontSize: "13px",
-              padding: "5px 10px",
-              borderRadius: "6px",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <div style={{ background: "#1e40af", color: "white", fontWeight: 800, fontSize: "13px", padding: "5px 10px", borderRadius: "6px", letterSpacing: "0.5px" }}>
             FEMA
           </div>
           <div>
-            <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b" }}>
-              Planificador de OTs
-            </div>
-            <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-              Fracttal One · Instancia 5495
-            </div>
+            <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b" }}>Planificador de OTs</div>
+            <div style={{ fontSize: "11px", color: "#94a3b8" }}>Fracttal One · Instancia 5495</div>
           </div>
         </div>
-        <div style={{ fontSize: "12px", color: "#94a3b8" }}>
-          Transportes de Carga FEMA S.A. de C.V.
-        </div>
+        <div style={{ fontSize: "12px", color: "#94a3b8" }}>Transportes de Carga FEMA S.A. de C.V.</div>
       </header>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <div
-          style={{
-            width: "380px",
-            flexShrink: 0,
-            background: "#f8fafc",
-            borderRight: "1px solid #e2e8f0",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              padding: "16px",
-              borderBottom: "1px solid #e2e8f0",
-              background: "white",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "12px",
-              }}
-            >
+        <div style={{ width: "380px", flexShrink: 0, background: "#f8fafc", borderRight: "1px solid #e2e8f0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ padding: "16px", borderBottom: "1px solid #e2e8f0", background: "white" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 700, color: "#1e293b" }}>
-                  TAREAS PENDIENTES
-                </span>
-                <span
-                  style={{
-                    background: "#1e40af",
-                    color: "white",
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    padding: "2px 8px",
-                    borderRadius: "20px",
-                  }}
-                >
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "#1e293b" }}>TAREAS PENDIENTES</span>
+                <span style={{ background: "#1e40af", color: "white", fontSize: "11px", fontWeight: 700, padding: "2px 8px", borderRadius: "20px" }}>
                   {loading ? "..." : filtered.length + "/" + tasks.length}
                 </span>
               </div>
               <button
                 onClick={() => fetchTasks(true)}
                 disabled={refreshing || loading}
-                style={{
-                  background: "none",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "8px",
-                  padding: "5px 8px",
-                  cursor: refreshing ? "not-allowed" : "pointer",
-                  color: "#64748b",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  fontSize: "11px",
-                }}
+                style={{ background: "none", border: "1px solid #e2e8f0", borderRadius: "8px", padding: "5px 8px", cursor: refreshing ? "not-allowed" : "pointer", color: "#64748b", display: "flex", alignItems: "center", gap: "4px", fontSize: "11px" }}
               >
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  style={{ animation: refreshing ? "spin 1s linear infinite" : "none" }}
-                >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: refreshing ? "spin 1s linear infinite" : "none" }}>
                   <path d="M23 4v6h-6" />
                   <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
                 </svg>
@@ -186,24 +139,35 @@ export default function DashboardPage() {
               </button>
             </div>
 
+            {/* PILLS FILTRABLES */}
             {!loading && (
               <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
-                <StatPill label="Atrasadas" value={overdueCount} color="#ef4444" />
-                <StatPill label="Planificadas" value={plannedCount} color="#4f46e5" />
-                <StatPill label="No planif." value={unplannedCount} color="#94a3b8" />
+                <FilterPill
+                  label="Atrasadas"
+                  value={overdueCount}
+                  color="#ef4444"
+                  active={activeFilter === "overdue"}
+                  onClick={() => handleFilter("overdue")}
+                />
+                <FilterPill
+                  label="Planificadas"
+                  value={plannedCount}
+                  color="#4f46e5"
+                  active={activeFilter === "planned"}
+                  onClick={() => handleFilter("planned")}
+                />
+                <FilterPill
+                  label="No planif."
+                  value={unplannedCount}
+                  color="#94a3b8"
+                  active={activeFilter === "unplanned"}
+                  onClick={() => handleFilter("unplanned")}
+                />
               </div>
             )}
 
             <div style={{ position: "relative" }}>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#94a3b8"
-                strokeWidth="2"
-                style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)" }}
-              >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)" }}>
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
@@ -212,17 +176,7 @@ export default function DashboardPage() {
                 placeholder="Buscar activo, tarea..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px 8px 32px",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                  outline: "none",
-                  background: "#f8fafc",
-                  boxSizing: "border-box",
-                  color: "#1e293b",
-                }}
+                style={{ width: "100%", padding: "8px 12px 8px 32px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", outline: "none", background: "#f8fafc", boxSizing: "border-box", color: "#1e293b" }}
               />
             </div>
 
@@ -242,17 +196,7 @@ export default function DashboardPage() {
             )}
 
             {error && (
-              <div
-                style={{
-                  background: "#fef2f2",
-                  border: "1px solid #fecaca",
-                  borderRadius: "10px",
-                  padding: "16px",
-                  textAlign: "center",
-                  color: "#dc2626",
-                  fontSize: "13px",
-                }}
-              >
+              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px", padding: "16px", textAlign: "center", color: "#dc2626", fontSize: "13px" }}>
                 <div style={{ fontSize: "20px", marginBottom: "6px" }}>⚠️</div>
                 {error}
               </div>
@@ -262,21 +206,19 @@ export default function DashboardPage() {
               <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}>
                 <div style={{ fontSize: "24px", marginBottom: "8px" }}>✅</div>
                 <div style={{ fontSize: "13px" }}>
-                  {search ? "Sin resultados para tu busqueda" : "No hay tareas pendientes"}
+                  {search || activeFilter !== "all" ? "Sin resultados para este filtro" : "No hay tareas pendientes"}
                 </div>
               </div>
             )}
 
-            {!loading &&
-              !error &&
-              filtered.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  isSelected={selectedTask?.id === task.id}
-                  onClick={() => setSelectedTask(task)}
-                />
-              ))}
+            {!loading && !error && filtered.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                isSelected={selectedTask?.id === task.id}
+                onClick={() => setSelectedTask(task)}
+              />
+            ))}
           </div>
         </div>
 
@@ -286,10 +228,7 @@ export default function DashboardPage() {
       </div>
 
       <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         ::-webkit-scrollbar { width: 4px; }
@@ -300,28 +239,24 @@ export default function DashboardPage() {
   );
 }
 
-function StatPill({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
+function FilterPill({ label, value, color, active, onClick }: { label: string; value: number; color: string; active: boolean; onClick: () => void }) {
   return (
     <div
+      onClick={onClick}
       style={{
         flex: 1,
-        background: color + "12",
-        border: "1px solid " + color + "30",
+        background: active ? color : color + "12",
+        border: "2px solid " + (active ? color : color + "30"),
         borderRadius: "8px",
         padding: "5px 8px",
         textAlign: "center",
+        cursor: "pointer",
+        transition: "all 0.15s ease",
+        userSelect: "none",
       }}
     >
-      <div style={{ fontSize: "14px", fontWeight: 800, color }}>{value}</div>
-      <div style={{ fontSize: "9px", color: "#94a3b8", fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: "14px", fontWeight: 800, color: active ? "white" : color }}>{value}</div>
+      <div style={{ fontSize: "9px", color: active ? "white" : "#94a3b8", fontWeight: 600 }}>{label}</div>
     </div>
   );
 }
