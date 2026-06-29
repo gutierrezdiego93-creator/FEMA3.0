@@ -5,9 +5,14 @@ export async function GET() {
   try {
     const token = await getFracttalToken();
 
-    // Endpoint correcto: tareas pendientes con activo, fecha, atraso, etc.
+    // Calcula automáticamente: hoy + 2 años (nunca expira)
+    const until = new Date();
+    until.setFullYear(until.getFullYear() + 2);
+    const untilStr = until.toISOString().split("T")[0];
+
+    // Endpoint correcto de tareas pendientes con rango dinámico
     const response = await fetch(
-      `https://app.fracttal.com/api/tasks_todo/?limit=200`,
+      `https://app.fracttal.com/api/tasks_todo/?until=${untilStr}&limit=200`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
