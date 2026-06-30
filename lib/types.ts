@@ -1,24 +1,28 @@
 // lib/types.ts
-// Tipos de datos que devuelve Fracttal para tareas pendientes
 
 export interface FracttalTask {
   id: number;
   code: string;
-  item_description: string;       // Nombre del activo
-  task_description?: string;      // Nombre de la tarea
+  item_description: string;
+  task_description?: string;
   description?: string;
-  date_maintenance: string;       // Fecha programada
-  duration: number;               // Duración en minutos
-  delay: number;                  // Días de atraso (0 = a tiempo)
-  id_priorities: number;          // 1=Muy Alta, 2=Alta, 3=Media, 4=Baja, 5=Muy Baja
-  wo_folio?: string;              // Número de OT si ya tiene
-  id_group_task?: number;         // Si es planificada o no
-  location_description?: string;  // Ubicación
-  workshop_description?: string;  // Taller
-  type_description?: string;      // Tipo (Preventivo, Correctivo, etc.)
-  discipline_description?: string;// Disciplina (Eléctrico, Mecánico, etc.)
+  date_maintenance: string;
+  duration: number;
+  delay: number;
+  id_priorities: number;
+  wo_folio?: string;
+  id_group_task?: number;
+  location_description?: string;
+  workshop_description?: string;
+  type_description?: string;
+  tasks_types_main_description?: string;
+  tasks_types_description?: string;
+  tasks_types_2_description?: string;
+  priorities_description?: string;
+  group_task_description?: string;
   requested_by?: string;
-  [key: string]: unknown;
+  trigger_description?: string;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export interface FracttalApiResponse {
@@ -26,8 +30,6 @@ export interface FracttalApiResponse {
   data: FracttalTask[];
   total: number;
 }
-
-export type PriorityLevel = 1 | 2 | 3 | 4 | 5;
 
 export const PRIORITY_LABELS: Record<number, string> = {
   1: "MUY ALTA",
