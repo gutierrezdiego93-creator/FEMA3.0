@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { FracttalTask } from "@/lib/types";
 import TaskCard from "@/components/TaskCard";
 import TaskDetail from "@/components/TaskDetail";
@@ -14,6 +15,8 @@ function isOverdue(task: FracttalTask): boolean {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [sessionUser, setSessionUser] = useState<{ full_name: string; code: string } | null>(null);
   const [tasks, setTasks] = useState<FracttalTask[]>([]);
   const [filtered, setFiltered] = useState<FracttalTask[]>([]);
   const [selectedTask, setSelectedTask] = useState<FracttalTask | null>(null);
@@ -24,11 +27,16 @@ export default function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  useEffect(() => {
+    const session = sessionStorage.getItem("fema_user");
+    if (!session) { router.replace("/login"); return; }
+    setSessionUser(JSON.parse(session));
+  }, [router]);
+
   const fetchTasks = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
     setError(null);
-
     try {
       const res = await fetch("/api/tasks");
       if (!res.ok) throw new Error("Error " + res.status);
@@ -45,39 +53,26 @@ export default function DashboardPage() {
     }
   }, []);
 
-  useEffect(() => { fetchTasks(); }, [fetchTasks]);
+  useEffect(() => { if (sessionUser) fetchTasks(); }, [fetchTasks, sessionUser]);
 
   useEffect(() => {
     const interval = setInterval(() => fetchTasks(true), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchTasks]);
 
-  // Aplicar filtro activo + búsqueda
   useEffect(() => {
     let result = [...tasks];
-
-    // Filtro por tipo
-    if (activeFilter === "overdue") {
-      result = result.filter((t) => isOverdue(t));
-    } else if (activeFilter === "planned") {
-      result = result.filter((t) => !!t.id_group_task);
-    } else if (activeFilter === "unplanned") {
-      result = result.filter((t) => !t.id_group_task);
-    }
-
-    // Filtro por búsqueda
+    if (activeFilter === "overdue") result = result.filter((t) => isOverdue(t));
+    else if (activeFilter === "planned") result = result.filter((t) => !!t.id_group_task);
+    else if (activeFilter === "unplanned") result = result.filter((t) => !t.id_group_task);
     if (search.trim()) {
       const q = search.toLowerCase();
-      result = result.filter(
-        (t) =>
-          t.item_description?.toLowerCase().includes(q) ||
-          t.task_description?.toLowerCase().includes(q) ||
-          t.description?.toLowerCase().includes(q) ||
-          t.code?.toLowerCase().includes(q) ||
-          t.location_description?.toLowerCase().includes(q)
+      result = result.filter((t) =>
+        t.item_description?.toLowerCase().includes(q) ||
+        t.description?.toLowerCase().includes(q) ||
+        t.code?.toLowerCase().includes(q)
       );
     }
-
     setFiltered(result);
   }, [search, tasks, activeFilter]);
 
@@ -90,30 +85,32 @@ export default function DashboardPage() {
     setSelectedTask(null);
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("fema_user");
+    router.replace("/login");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#f1f5f9" }}>
-      <header
-        style={{
-          background: "white",
-          borderBottom: "1px solid #e2e8f0",
-          padding: "0 24px",
-          height: "60px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexShrink: 0,
-        }}
-      >
+      <header style={{ background: "white", borderBottom: "1px solid #e2e8f0", padding: "0 24px", height: "60px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{ background: "#1e40af", color: "white", fontWeight: 800, fontSize: "13px", padding: "5px 10px", borderRadius: "6px", letterSpacing: "0.5px" }}>
-            FEMA
-          </div>
+          <div style={{ background: "#1e40af", color: "white", fontWeight: 800, fontSize: "13px", padding: "5px 10px", borderRadius: "6px", letterSpacing: "0.5px" }}>FEMA</div>
           <div>
             <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b" }}>Planificador de OTs</div>
             <div style={{ fontSize: "11px", color: "#94a3b8" }}>Fracttal One · Instancia 5495</div>
           </div>
         </div>
-        <div style={{ fontSize: "12px", color: "#94a3b8" }}>Transportes de Carga FEMA S.A. de C.V.</div>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {sessionUser && (
+            <div style={{ fontSize: "12px", color: "#64748b" }}>
+              👤 <strong>{sessionUser.full_name.trim()}</strong>
+            </div>
+          )}
+          <div style={{ fontSize: "12px", color: "#94a3b8" }}>Transportes de Carga FEMA S.A. de C.V.</div>
+          <button onClick={handleLogout} style={{ background: "none", border: "1px solid #e2e8f0", borderRadius: "6px", padding: "4px 10px", fontSize: "11px", color: "#94a3b8", cursor: "pointer" }}>
+            Salir
+          </button>
+        </div>
       </header>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
@@ -126,58 +123,27 @@ export default function DashboardPage() {
                   {loading ? "..." : filtered.length + "/" + tasks.length}
                 </span>
               </div>
-              <button
-                onClick={() => fetchTasks(true)}
-                disabled={refreshing || loading}
-                style={{ background: "none", border: "1px solid #e2e8f0", borderRadius: "8px", padding: "5px 8px", cursor: refreshing ? "not-allowed" : "pointer", color: "#64748b", display: "flex", alignItems: "center", gap: "4px", fontSize: "11px" }}
-              >
+              <button onClick={() => fetchTasks(true)} disabled={refreshing || loading} style={{ background: "none", border: "1px solid #e2e8f0", borderRadius: "8px", padding: "5px 8px", cursor: refreshing ? "not-allowed" : "pointer", color: "#64748b", display: "flex", alignItems: "center", gap: "4px", fontSize: "11px" }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: refreshing ? "spin 1s linear infinite" : "none" }}>
-                  <path d="M23 4v6h-6" />
-                  <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+                  <path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
                 </svg>
                 {refreshing ? "Actualizando..." : "Actualizar"}
               </button>
             </div>
 
-            {/* PILLS FILTRABLES */}
             {!loading && (
               <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
-                <FilterPill
-                  label="Atrasadas"
-                  value={overdueCount}
-                  color="#ef4444"
-                  active={activeFilter === "overdue"}
-                  onClick={() => handleFilter("overdue")}
-                />
-                <FilterPill
-                  label="Planificadas"
-                  value={plannedCount}
-                  color="#4f46e5"
-                  active={activeFilter === "planned"}
-                  onClick={() => handleFilter("planned")}
-                />
-                <FilterPill
-                  label="No planif."
-                  value={unplannedCount}
-                  color="#94a3b8"
-                  active={activeFilter === "unplanned"}
-                  onClick={() => handleFilter("unplanned")}
-                />
+                <FilterPill label="Atrasadas" value={overdueCount} color="#ef4444" active={activeFilter === "overdue"} onClick={() => handleFilter("overdue")} />
+                <FilterPill label="Planificadas" value={plannedCount} color="#4f46e5" active={activeFilter === "planned"} onClick={() => handleFilter("planned")} />
+                <FilterPill label="No planif." value={unplannedCount} color="#94a3b8" active={activeFilter === "unplanned"} onClick={() => handleFilter("unplanned")} />
               </div>
             )}
 
             <div style={{ position: "relative" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)" }}>
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
-              <input
-                type="text"
-                placeholder="Buscar activo, tarea..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                style={{ width: "100%", padding: "8px 12px 8px 32px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", outline: "none", background: "#f8fafc", boxSizing: "border-box", color: "#1e293b" }}
-              />
+              <input type="text" placeholder="Buscar activo, tarea..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: "100%", padding: "8px 12px 8px 32px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", outline: "none", background: "#f8fafc", boxSizing: "border-box", color: "#1e293b" }} />
             </div>
 
             {lastUpdated && (
@@ -188,36 +154,11 @@ export default function DashboardPage() {
           </div>
 
           <div style={{ flex: 1, overflowY: "auto", padding: "12px" }}>
-            {loading && (
-              <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}>
-                <div style={{ fontSize: "24px", marginBottom: "8px" }}>⏳</div>
-                <div style={{ fontSize: "13px" }}>Cargando tareas de Fracttal...</div>
-              </div>
-            )}
-
-            {error && (
-              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px", padding: "16px", textAlign: "center", color: "#dc2626", fontSize: "13px" }}>
-                <div style={{ fontSize: "20px", marginBottom: "6px" }}>⚠️</div>
-                {error}
-              </div>
-            )}
-
-            {!loading && !error && filtered.length === 0 && (
-              <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}>
-                <div style={{ fontSize: "24px", marginBottom: "8px" }}>✅</div>
-                <div style={{ fontSize: "13px" }}>
-                  {search || activeFilter !== "all" ? "Sin resultados para este filtro" : "No hay tareas pendientes"}
-                </div>
-              </div>
-            )}
-
+            {loading && <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}><div style={{ fontSize: "24px", marginBottom: "8px" }}>⏳</div><div style={{ fontSize: "13px" }}>Cargando tareas de Fracttal...</div></div>}
+            {error && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px", padding: "16px", textAlign: "center", color: "#dc2626", fontSize: "13px" }}><div style={{ fontSize: "20px", marginBottom: "6px" }}>⚠️</div>{error}</div>}
+            {!loading && !error && filtered.length === 0 && <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}><div style={{ fontSize: "24px", marginBottom: "8px" }}>✅</div><div style={{ fontSize: "13px" }}>{search || activeFilter !== "all" ? "Sin resultados" : "No hay tareas pendientes"}</div></div>}
             {!loading && !error && filtered.map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                isSelected={selectedTask?.id === task.id}
-                onClick={() => setSelectedTask(task)}
-              />
+              <TaskCard key={task.id} task={task} isSelected={selectedTask?.id === task.id} onClick={() => setSelectedTask(task)} />
             ))}
           </div>
         </div>
@@ -241,20 +182,7 @@ export default function DashboardPage() {
 
 function FilterPill({ label, value, color, active, onClick }: { label: string; value: number; color: string; active: boolean; onClick: () => void }) {
   return (
-    <div
-      onClick={onClick}
-      style={{
-        flex: 1,
-        background: active ? color : color + "12",
-        border: "2px solid " + (active ? color : color + "30"),
-        borderRadius: "8px",
-        padding: "5px 8px",
-        textAlign: "center",
-        cursor: "pointer",
-        transition: "all 0.15s ease",
-        userSelect: "none",
-      }}
-    >
+    <div onClick={onClick} style={{ flex: 1, background: active ? color : color + "12", border: "2px solid " + (active ? color : color + "30"), borderRadius: "8px", padding: "5px 8px", textAlign: "center", cursor: "pointer", transition: "all 0.15s ease", userSelect: "none" }}>
       <div style={{ fontSize: "14px", fontWeight: 800, color: active ? "white" : color }}>{value}</div>
       <div style={{ fontSize: "9px", color: active ? "white" : "#94a3b8", fontWeight: 600 }}>{label}</div>
     </div>
