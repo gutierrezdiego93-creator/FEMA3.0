@@ -379,30 +379,18 @@ function CreateOTContent() {
               </div>
             </div>
 
-            {/* Fila 2: Modo + Depende de OT */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "28px" }}>
-              <div>
-                <label style={labelStyle}>MODO DE CREACIÓN</label>
-                <select
-                  value={modo}
-                  onChange={(e) => setModo(e.target.value)}
-                  style={selectStyle}
-                >
-                  {MODO_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label style={labelStyle}>¿DEPENDE DE OTRA OT?</label>
-                <input
-                  type="text"
-                  placeholder="Seleccione la OT padre"
-                  disabled
-                  style={readonlyStyle}
-                />
-              </div>
+            {/* Fila 2: Modo de creación */}
+            <div style={{ marginBottom: "28px" }}>
+              <label style={labelStyle}>MODO DE CREACIÓN</label>
+              <select
+                value={modo}
+                onChange={(e) => setModo(e.target.value)}
+                style={{ ...selectStyle, maxWidth: "400px" }}
+              >
+                {MODO_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
             </div>
 
             {/* Tabla de tareas */}
