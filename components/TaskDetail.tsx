@@ -7,9 +7,11 @@ interface TaskDetailProps {
   task: FracttalTask | null;
 }
 
-function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
+function formatDuration(totalSeconds: number): string {
+  // Fracttal expresa duration en SEGUNDOS
+  const totalMinutes = Math.round(totalSeconds / 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
   return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + " hrs";
 }
 
