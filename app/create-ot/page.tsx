@@ -21,16 +21,21 @@ const MODO_OPTIONS = [
   { value: "3", label: "Generar una OT por Tarea" },
 ];
 
-function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
+function formatDuration(totalSeconds: number): string {
+  // Fracttal expresa duration en SEGUNDOS. Convertimos a HHH:MM
+  const totalMinutes = Math.round(totalSeconds / 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
   return String(h).padStart(3, "0") + ":" + String(m).padStart(2, "0");
 }
 
 function parseDuration(str: string): number {
+  // Convierte HHH:MM de vuelta a segundos (formato que espera Fracttal)
   const parts = str.split(":");
   if (parts.length !== 2) return 0;
-  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  const hours = parseInt(parts[0]) || 0;
+  const minutes = parseInt(parts[1]) || 0;
+  return (hours * 60 + minutes) * 60;
 }
 
 function CreateOTContent() {
