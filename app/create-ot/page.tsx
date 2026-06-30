@@ -52,55 +52,16 @@ function ResponsableModal(props: {
 
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(15,23,42,0.6)",
-        zIndex: 1000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-      }}
+      style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}
       onClick={onClose}
     >
       <div
         onClick={function (e) { e.stopPropagation(); }}
-        style={{
-          background: "white",
-          borderRadius: "16px",
-          width: "100%",
-          maxWidth: "480px",
-          maxHeight: "80vh",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-        }}
+        style={{ background: "white", borderRadius: "16px", width: "100%", maxWidth: "480px", maxHeight: "80vh", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
       >
-        <div
-          style={{
-            padding: "18px 20px",
-            borderBottom: "1px solid #e2e8f0",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b" }}>
-            Seleccionar Responsable
-          </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "#94a3b8",
-              padding: "4px",
-              display: "flex",
-            }}
-          >
+        <div style={{ padding: "18px 20px", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b" }}>Seleccionar Responsable</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: "4px", display: "flex" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
@@ -109,15 +70,7 @@ function ResponsableModal(props: {
 
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #f1f5f9" }}>
           <div style={{ position: "relative" }}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#94a3b8"
-              strokeWidth="2"
-              style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}
-            >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}>
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg>
@@ -127,16 +80,7 @@ function ResponsableModal(props: {
               placeholder="Buscar por nombre..."
               value={search}
               onChange={function (e) { setSearch(e.target.value); }}
-              style={{
-                width: "100%",
-                padding: "10px 14px 10px 36px",
-                border: "1px solid #e2e8f0",
-                borderRadius: "10px",
-                fontSize: "14px",
-                outline: "none",
-                boxSizing: "border-box",
-                color: "#1e293b",
-              }}
+              style={{ width: "100%", padding: "10px 14px 10px 36px", border: "1px solid #e2e8f0", borderRadius: "10px", fontSize: "14px", outline: "none", boxSizing: "border-box", color: "#1e293b" }}
             />
           </div>
           <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "8px" }}>
@@ -146,47 +90,22 @@ function ResponsableModal(props: {
 
         <div style={{ flex: 1, overflowY: "auto", padding: "8px" }}>
           {filtered.length === 0 && (
-            <div style={{ textAlign: "center", padding: "32px 0", color: "#94a3b8", fontSize: "13px" }}>
-              Sin resultados
-            </div>
+            <div style={{ textAlign: "center", padding: "32px 0", color: "#94a3b8", fontSize: "13px" }}>Sin resultados</div>
           )}
           {filtered.map(function (t) {
             return (
               <div
                 key={t.code}
                 onClick={function () { onSelect(t.code); }}
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
+                style={{ padding: "12px 14px", borderRadius: "10px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
                 onMouseEnter={function (e) { e.currentTarget.style.background = "#f1f5f9"; }}
                 onMouseLeave={function (e) { e.currentTarget.style.background = "transparent"; }}
               >
-                <div
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    background: "#e0e7ff",
-                    color: "#4338ca",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "13px",
-                    fontWeight: 700,
-                    flexShrink: 0,
-                  }}
-                >
+                <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#e0e7ff", color: "#4338ca", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, flexShrink: 0 }}>
                   {t.full_name.trim().charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontSize: "13px", fontWeight: 600, color: "#1e293b" }}>
-                    {t.full_name.trim()}
-                  </div>
+                  <div style={{ fontSize: "13px", fontWeight: 600, color: "#1e293b" }}>{t.full_name.trim()}</div>
                   <div style={{ fontSize: "11px", color: "#94a3b8" }}>{t.code}</div>
                 </div>
               </div>
@@ -206,6 +125,9 @@ function CreateOTContent() {
   const itemDesc = searchParams.get("item") || "";
   const duration = parseInt(searchParams.get("duration") || "0");
   const taskType = searchParams.get("type") || "";
+  const mode = searchParams.get("mode") || "padre";
+  const parentFolio = searchParams.get("parentFolio") || "";
+  const excludeCode = searchParams.get("excludeCode") || "";
 
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
   const [technicians, setTechnicians] = useState<Personnel[]>([]);
@@ -225,9 +147,15 @@ function CreateOTContent() {
 
     fetch("/api/technicians")
       .then(function (r) { return r.json(); })
-      .then(function (data) { setTechnicians(data.data || []); })
+      .then(function (data) {
+        const all: Personnel[] = data.data || [];
+        const list = mode === "hija" && excludeCode
+          ? all.filter(function (t) { return t.code !== excludeCode; })
+          : all;
+        setTechnicians(list);
+      })
       .catch(function () {});
-  }, [router]);
+  }, [router, mode, excludeCode]);
 
   const selectedTech = technicians.find(function (t) { return t.code === responsible; });
 
@@ -242,6 +170,14 @@ function CreateOTContent() {
       account_code: sessionUser.code,
       tasks_todo: [{ tasks_todo_id: parseInt(taskId || "0") }],
     };
+
+    if (mode === "hija" && parentFolio) {
+      body.annotations = {
+        id_wo_related: parentFolio,
+        code_wo_related: "OT-" + parentFolio,
+        wo_related_status: "OPEN",
+      };
+    }
 
     try {
       const res = await fetch("/api/work-orders", {
@@ -307,6 +243,8 @@ function CreateOTContent() {
     cursor: "pointer",
   };
 
+  const isHija = mode === "hija";
+
   return (
     <div style={{ minHeight: "100vh", background: "#f1f5f9", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       {showModal && (
@@ -327,7 +265,9 @@ function CreateOTContent() {
           </button>
           <div style={{ width: "1px", height: "20px", background: "#e2e8f0" }} />
           <div style={{ background: "#1e40af", color: "white", fontWeight: 800, fontSize: "13px", padding: "4px 10px", borderRadius: "6px" }}>FEMA</div>
-          <div style={{ fontSize: "14px", fontWeight: 700, color: "#1e293b" }}>Generar Nueva Orden de Trabajo</div>
+          <div style={{ fontSize: "14px", fontWeight: 700, color: "#1e293b" }}>
+            {isHija ? "Agregar Técnico (OT Hija de OT-" + parentFolio + ")" : "Generar Nueva Orden de Trabajo"}
+          </div>
         </div>
 
         {!result && (
@@ -347,23 +287,37 @@ function CreateOTContent() {
       </header>
 
       <div style={{ maxWidth: "900px", margin: "32px auto", padding: "0 24px" }}>
+        {isHija && !result && (
+          <div style={{ background: "#eef2ff", border: "1px solid #c7d2fe", borderRadius: "10px", padding: "12px 16px", marginBottom: "16px", fontSize: "13px", color: "#4338ca", display: "flex", alignItems: "center", gap: "8px" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4338ca" strokeWidth="2.5">
+              <path d="M12 2L22 12L12 22L2 12Z" />
+            </svg>
+            Esta orden quedará ligada como hija de <strong>OT-{parentFolio}</strong>
+          </div>
+        )}
+
         {result && (
           <div style={{ background: "white", borderRadius: "16px", padding: "48px", textAlign: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", marginBottom: "24px" }}>
             <div style={{ fontSize: "48px", marginBottom: "16px" }}>✅</div>
-            <div style={{ fontSize: "20px", fontWeight: 800, color: "#1e293b", marginBottom: "8px" }}>Orden de Trabajo Creada</div>
+            <div style={{ fontSize: "20px", fontWeight: 800, color: "#1e293b", marginBottom: "8px" }}>
+              {isHija ? "OT Hija Creada" : "Orden de Trabajo Creada"}
+            </div>
             <div style={{ display: "inline-block", background: "#eff6ff", border: "2px solid #1e40af", borderRadius: "12px", padding: "12px 32px", fontSize: "28px", fontWeight: 800, color: "#1e40af", marginBottom: "16px", letterSpacing: "1px" }}>
               {result.wo_folio}
             </div>
             <div style={{ fontSize: "13px", color: "#64748b", marginBottom: "32px" }}>
               Responsable: <strong>{result.responsible}</strong>
+              {isHija && <div style={{ marginTop: "4px" }}>Ligada a OT-{parentFolio}</div>}
             </div>
             <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
               <button onClick={function () { router.push("/dashboard"); }} style={{ background: "#1e40af", color: "white", border: "none", borderRadius: "10px", padding: "12px 28px", fontSize: "14px", fontWeight: 700, cursor: "pointer" }}>
                 Finalizar
               </button>
-              <button disabled style={{ background: "#f1f5f9", color: "#94a3b8", border: "2px solid #e2e8f0", borderRadius: "10px", padding: "12px 28px", fontSize: "14px", fontWeight: 700, cursor: "not-allowed" }}>
-                + Agregar técnicos (Próx. etapa)
-              </button>
+              {!isHija && (
+                <button disabled style={{ background: "#f1f5f9", color: "#94a3b8", border: "2px solid #e2e8f0", borderRadius: "10px", padding: "12px 28px", fontSize: "14px", fontWeight: 700, cursor: "not-allowed" }}>
+                  + Agregar técnicos (desde el dashboard)
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -382,15 +336,7 @@ function CreateOTContent() {
                 <button
                   type="button"
                   onClick={function () { setShowModal(true); }}
-                  style={{
-                    ...inputStyle,
-                    border: "1px solid " + (responsible ? "#e2e8f0" : "#fca5a5"),
-                    textAlign: "left",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
+                  style={{ ...inputStyle, border: "1px solid " + (responsible ? "#e2e8f0" : "#fca5a5"), textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}
                 >
                   <span style={{ color: responsible ? "#1e293b" : "#94a3b8" }}>
                     {selectedTech ? selectedTech.full_name.trim() : "Selecciona el responsable"}
@@ -403,6 +349,11 @@ function CreateOTContent() {
                 {!responsible && (
                   <div style={{ fontSize: "11px", color: "#ef4444", marginTop: "4px" }}>
                     Responsable no puede estar en blanco
+                  </div>
+                )}
+                {isHija && (
+                  <div style={{ fontSize: "10px", color: "#94a3b8", marginTop: "4px" }}>
+                    El técnico de la OT padre no aparece en esta lista
                   </div>
                 )}
               </div>
@@ -422,14 +373,16 @@ function CreateOTContent() {
               </div>
             </div>
 
-            <div style={{ marginBottom: "28px" }}>
-              <label style={labelStyle}>MODO DE CREACIÓN</label>
-              <select value={modo} onChange={function (e) { setModo(e.target.value); }} style={{ ...selectStyle, maxWidth: "400px" }}>
-                {MODO_OPTIONS.map(function (o) {
-                  return <option key={o.value} value={o.value}>{o.label}</option>;
-                })}
-              </select>
-            </div>
+            {!isHija && (
+              <div style={{ marginBottom: "28px" }}>
+                <label style={labelStyle}>MODO DE CREACIÓN</label>
+                <select value={modo} onChange={function (e) { setModo(e.target.value); }} style={{ ...selectStyle, maxWidth: "400px" }}>
+                  {MODO_OPTIONS.map(function (o) {
+                    return <option key={o.value} value={o.value}>{o.label}</option>;
+                  })}
+                </select>
+              </div>
+            )}
 
             <div style={{ border: "1px solid #e2e8f0", borderRadius: "10px", overflow: "hidden" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
