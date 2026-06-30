@@ -64,7 +64,7 @@ function CreateOTContent() {
     if (!session) { router.replace("/login"); return; }
     setSessionUser(JSON.parse(session));
 
-    fetch("/api/personnel")
+    fetch("/api/technicians")
       .then((r) => r.json())
       .then((data) => {
         setTechnicians(data.data || []);
