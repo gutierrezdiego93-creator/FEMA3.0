@@ -77,8 +77,8 @@ export default function TaskCard({ task, isSelected, onClick }: TaskCardProps) {
             {task.code && (
               <span style={{ fontSize: "12px", color: "#64748b" }}>
                 {"  "}
-                {task.code}{"  "}
-                <span style={{ color: "#94a3b8" }}>{`{ ${task.code} }`}</span>
+                {String(task.code)}{"  "}
+                <span style={{ color: "#94a3b8" }}>{`{ ${String(task.code)} }`}</span>
               </span>
             )}
           </div>
@@ -98,7 +98,7 @@ export default function TaskCard({ task, isSelected, onClick }: TaskCardProps) {
             <div>
               <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 600 }}>Tarea: </span>
               <span style={{ fontSize: "12px", color: "#1e293b", fontWeight: 600 }}>
-                {task.task_description || task.description || "Sin descripción"}
+                {String(task.task_description || task.description || "Sin descripción")}
               </span>
             </div>
             {/* Indicador de prioridad */}
@@ -118,10 +118,10 @@ export default function TaskCard({ task, isSelected, onClick }: TaskCardProps) {
       {/* Tags de tipo, disciplina, prioridad */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "10px" }}>
         {task.type_description && (
-          <span style={tagStyle("#dcfce7", "#166534")}>{task.type_description.toUpperCase()}</span>
+          <span style={tagStyle("#dcfce7", "#166534")}>{String(task.type_description).toUpperCase()}</span>
         )}
         {task.discipline_description && (
-          <span style={tagStyle("#dbeafe", "#1e40af")}>{task.discipline_description.toUpperCase()}</span>
+          <span style={tagStyle("#dbeafe", "#1e40af")}>{String(task.discipline_description).toUpperCase()}</span>
         )}
         {isPlanned ? (
           <span style={tagStyle("#e0e7ff", "#3730a3")}>PLANIFICADA</span>
@@ -174,7 +174,7 @@ export default function TaskCard({ task, isSelected, onClick }: TaskCardProps) {
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <LocationIcon />
             <span style={{ fontSize: "11px", color: "#94a3b8" }}>
-              {task.location_description}
+              {String(task.location_description)}
             </span>
           </div>
         )}
@@ -182,7 +182,7 @@ export default function TaskCard({ task, isSelected, onClick }: TaskCardProps) {
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <WorkshopIcon />
             <span style={{ fontSize: "11px", color: "#4f46e5", fontWeight: 600 }}>
-              {task.workshop_description}
+              {String(task.workshop_description)}
             </span>
           </div>
         )}
