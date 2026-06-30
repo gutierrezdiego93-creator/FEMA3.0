@@ -46,3 +46,20 @@ export const PRIORITY_COLORS: Record<number, string> = {
   4: "#22c55e",
   5: "#94a3b8",
 };
+
+// ====== Tipos para OTs en Proceso (Etapa 2) ======
+export interface FracttalWorkOrder {
+  id_work_order: number;
+  wo_folio: string;
+  items_log_description: string;
+  description: string;
+  completed_percentage: number;
+  date_maintenance: string;
+  personnel_description: string;
+  code_responsible: string;
+  has_children: boolean;
+  id_parent_wo: string | null;
+  duration: number;
+  created_by: string;
+  [key: string]: string | number | boolean | null | undefined;
+}
