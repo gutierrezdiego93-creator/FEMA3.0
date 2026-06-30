@@ -35,7 +35,7 @@ export default function WorkOrderDetail(props: WorkOrderDetailProps) {
   });
 
   const handleAgregarTecnicos = function () {
-    router.push("/create-ot?mode=hija&parentFolio=" + encodeURIComponent(wo.wo_folio) + "&taskId=" + wo.id_task + "&desc=" + encodeURIComponent(wo.description || "") + "&item=" + encodeURIComponent(wo.items_log_description || "") + "&duration=" + wo.duration + "&excludeCode=" + encodeURIComponent(wo.code_responsible || ""));
+    router.push("/create-ot?mode=hija&parentFolio=" + encodeURIComponent(wo.wo_folio) + "&taskId=" + wo.id_task + "&desc=" + encodeURIComponent(wo.description || "") + "&item=" + encodeURIComponent(wo.items_log_description || "") + "&itemCode=" + encodeURIComponent(wo.code || "") + "&duration=" + wo.duration + "&excludeCode=" + encodeURIComponent(wo.code_responsible || ""));
   };
 
   return (
