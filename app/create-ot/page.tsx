@@ -123,6 +123,7 @@ function CreateOTContent() {
   const taskId = searchParams.get("taskId");
   const taskDesc = searchParams.get("desc") || "";
   const itemDesc = searchParams.get("item") || "";
+  const itemCode = searchParams.get("itemCode") || "";
   const duration = parseInt(searchParams.get("duration") || "0");
   const taskType = searchParams.get("type") || "";
   const mode = searchParams.get("mode") || "padre";
@@ -164,18 +165,32 @@ function CreateOTContent() {
     setCreating(true);
     setError(null);
 
-    const body: any = {
-      type: 1,
-      responsible_code: responsible,
-      account_code: sessionUser.code,
-      tasks_todo: [{ tasks_todo_id: parseInt(taskId || "0") }],
-    };
+    let body: any;
 
     if (mode === "hija" && parentFolio) {
-      body.annotations = {
-        id_wo_related: parentFolio,
-        code_wo_related: "OT-" + parentFolio,
-        wo_related_status: "OPEN",
+      // La tarea pendiente ya fue consumida al crear la OT padre.
+      // Para la hija usamos type 2 (tarea no planificada) con los
+      // mismos datos de activo/tarea que ya tenemos, ligada via annotations.
+      body = {
+        type: 2,
+        item_code: itemCode,
+        responsible_code: responsible,
+        account_code: sessionUser.code,
+        requested_by: sessionUser.full_name,
+        task_descripcion: (taskDesc || "Tarea sin descripción").substring(0, 200),
+        task_type_main: taskType || "Correctivo",
+        annotations: {
+          id_wo_related: parentFolio,
+          code_wo_related: "OT-" + parentFolio,
+          wo_related_status: "OPEN",
+        },
+      };
+    } else {
+      body = {
+        type: 1,
+        responsible_code: responsible,
+        account_code: sessionUser.code,
+        tasks_todo: [{ tasks_todo_id: parseInt(taskId || "0") }],
       };
     }
 
@@ -189,7 +204,9 @@ function CreateOTContent() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setError("Error al crear la OT. Verifica los datos e intenta nuevamente.");
+        const detail = data.detail || data.data;
+        const detailMsg = Array.isArray(detail) && detail[0] && detail[0].ERROR ? detail[0].ERROR : "";
+        setError("Error al crear la OT." + (detailMsg ? " " + detailMsg : " Verifica los datos e intenta nuevamente."));
         setCreating(false);
         return;
       }
