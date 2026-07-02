@@ -167,18 +167,18 @@ function CreateOTContent() {
 
     let body: any;
 
+    const durationSeconds = String(parseDuration(durationStr));
+
     if (mode === "hija" && parentFolio) {
-      // La tarea pendiente ya fue consumida al crear la OT padre.
-      // Para la hija usamos type 2 (tarea no planificada) con los
-      // mismos datos de activo/tarea que ya tenemos, ligada via annotations.
       body = {
         type: 2,
         item_code: itemCode,
         responsible_code: responsible,
         account_code: sessionUser.code,
         requested_by: sessionUser.full_name,
-        task_descripcion: (taskDesc || "Tarea sin descripción").substring(0, 200),
+        task_descripcion: (taskDesc || "Tarea sin descripcion").substring(0, 200),
         task_type_main: taskType || "Correctivo",
+        duration: durationSeconds,
         annotations: {
           id_wo_related: parentFolio,
           code_wo_related: "OT-" + parentFolio,
@@ -190,6 +190,7 @@ function CreateOTContent() {
         type: 1,
         responsible_code: responsible,
         account_code: sessionUser.code,
+        duration: durationSeconds,
         tasks_todo: [{ tasks_todo_id: parseInt(taskId || "0") }],
       };
     }
