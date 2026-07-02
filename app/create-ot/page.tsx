@@ -136,6 +136,7 @@ function CreateOTContent() {
   const [modo, setModo] = useState("1");
   const [responsible, setResponsible] = useState("");
   const [durationStr, setDurationStr] = useState(formatDuration(duration));
+  const originalDurationStr = formatDuration(duration); // fijo, nunca cambia
   const [creating, setCreating] = useState(false);
   const [result, setResult] = useState<{ wo_folio: string; responsible: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -422,7 +423,7 @@ function CreateOTContent() {
                     <td style={{ padding: "12px 14px", color: "#64748b" }}>{taskType || "-"}</td>
                     <td style={{ padding: "12px 14px", color: "#64748b" }}>{(searchParams.get("date") || "").split("T")[0] || "-"}</td>
                     <td style={{ padding: "12px 14px", color: "#64748b" }}>{searchParams.get("plan") || "-"}</td>
-                    <td style={{ padding: "12px 14px", color: "#64748b" }}>{durationStr}</td>
+                    <td style={{ padding: "12px 14px", color: "#64748b" }}>{originalDurationStr}</td>
                     <td style={{ padding: "12px 14px", color: "#64748b" }}>{searchParams.get("priority") || "Media"}</td>
                   </tr>
                 </tbody>
