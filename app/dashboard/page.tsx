@@ -245,7 +245,13 @@ export default function DashboardPage() {
             {loadingWO && <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}><div style={{ fontSize: "13px" }}>Cargando OTs...</div></div>}
             {!loadingWO && workOrders.length === 0 && <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}><div style={{ fontSize: "13px" }}>No hay OTs en proceso</div></div>}
             {!loadingWO && workOrders.map((wo) => (
-              <WorkOrderCard key={wo.wo_folio} wo={wo} isSelected={selectedWO?.wo_folio === wo.wo_folio} onClick={() => handleSelectWO(wo)} />
+              <WorkOrderCard
+                key={wo.wo_folio}
+                wo={wo}
+                isSelected={selectedWO?.wo_folio === wo.wo_folio}
+                onClick={() => handleSelectWO(wo)}
+                hasChildren={workOrders.some((w) => (w as any).annotations?.id_wo_related === wo.wo_folio)}
+              />
             ))}
           </div>
         </div>
