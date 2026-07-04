@@ -42,32 +42,34 @@ export default function WorkOrderCard(props: WorkOrderCardProps) {
         boxShadow: props.isSelected ? "0 4px 12px rgba(79,70,229,0.15)" : "0 1px 4px rgba(0,0,0,0.06)",
       }}
     >
-      <RelatedOtBadge code={(wo as any).annotations?.code_wo_related} />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
         <span style={{ fontSize: "13px", fontWeight: 700, color: "#1e40af" }}>
           OT-{wo.wo_folio}
         </span>
-        {(isPadreConHijas || isHija) && (
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "4px",
-              fontSize: "10px",
-              fontWeight: 700,
-              color: isHija ? "white" : "#4f46e5",
-              background: isHija ? "#4f46e5" : "white",
-              border: "1.5px solid #4f46e5",
-              borderRadius: "20px",
-              padding: "2px 8px",
-            }}
-          >
-            <svg width="9" height="9" viewBox="0 0 24 24" fill={isHija ? "white" : "none"} stroke={isHija ? "white" : "#4f46e5"} strokeWidth="2.5">
-              <path d="M12 2L22 12L12 22L2 12Z" />
-            </svg>
-            {isHija ? "Hija" : "Padre"}
-          </span>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <RelatedOtBadge code={(wo as any).annotations?.code_wo_related} />
+          {(isPadreConHijas || isHija) && (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                fontSize: "10px",
+                fontWeight: 700,
+                color: isHija ? "white" : "#4f46e5",
+                background: isHija ? "#4f46e5" : "white",
+                border: "1.5px solid #4f46e5",
+                borderRadius: "20px",
+                padding: "2px 8px",
+              }}
+            >
+              <svg width="9" height="9" viewBox="0 0 24 24" fill={isHija ? "white" : "none"} stroke={isHija ? "white" : "#4f46e5"} strokeWidth="2.5">
+                <path d="M12 2L22 12L12 22L2 12Z" />
+              </svg>
+              {isHija ? "Hija" : "Padre"}
+            </span>
+          )}
+        </div>
       </div>
 
       <div style={{ background: "#f1f5f9", borderRadius: "6px", padding: "6px 10px", marginBottom: "6px" }}>
