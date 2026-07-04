@@ -9,6 +9,7 @@ interface WorkOrderCardProps {
   wo: FracttalWorkOrder;
   isSelected: boolean;
   onClick: () => void;
+  hasChildren?: boolean;
 }
 
 function formatDuration(totalSeconds: number): string {
@@ -25,8 +26,11 @@ function formatDate(dateStr: string): string {
 
 export default function WorkOrderCard(props: WorkOrderCardProps) {
   const wo = props.wo;
-  const isHija = !!wo.id_parent_wo;
-  const isPadreConHijas = wo.has_children === true;
+  const isHija = !!wo.id_parent_wo || !!(wo as any).annotations?.code_wo_related;
+  // hasChildren llega calculado desde el dashboard (que sí tiene la lista
+  // completa de OTs para cruzar contra annotations.id_wo_related). Si no
+  // llega el prop, se usa el campo nativo como respaldo.
+  const isPadreConHijas = props.hasChildren === true || wo.has_children === true;
 
   return (
     <div
