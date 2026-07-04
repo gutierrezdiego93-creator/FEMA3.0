@@ -27,13 +27,18 @@ function formatDate(dateStr: string): string {
 export default function WorkOrderDetail(props: WorkOrderDetailProps) {
   const router = useRouter();
   const wo = props.wo;
-  const isHija = !!wo.id_parent_wo;
-  const hasChildren = wo.has_children === true;
+  const isHija = !!wo.id_parent_wo || !!(wo as any).annotations?.code_wo_related;
 
-  // Buscar las OTs hijas reales dentro de la lista que ya tenemos cargada
+  // Buscar las OTs hijas reales dentro de la lista que ya tenemos cargada.
+  // Se busca por id_parent_wo (campo nativo, hoy vacío) Y por
+  // annotations.id_wo_related (como ligamos las hijas hoy vía el workaround).
+  // El día que Fracttal llene id_parent_wo de forma nativa, esto sigue
+  // funcionando igual sin tocar nada.
   const hijas = props.allWorkOrders.filter(function (w) {
-    return w.id_parent_wo === wo.wo_folio;
+    return w.id_parent_wo === wo.wo_folio || (w as any).annotations?.id_wo_related === wo.wo_folio;
   });
+
+  const hasChildren = wo.has_children === true || hijas.length > 0;
 
   const handleAgregarTecnicos = function () {
     router.push("/create-ot?mode=hija&parentFolio=" + encodeURIComponent(wo.wo_folio) + "&taskId=" + wo.id_task + "&desc=" + encodeURIComponent(wo.description || "") + "&item=" + encodeURIComponent(wo.items_log_description || "") + "&itemCode=" + encodeURIComponent(wo.code || "") + "&duration=" + wo.duration + "&excludeCode=" + encodeURIComponent(wo.code_responsible || ""));
@@ -77,14 +82,14 @@ export default function WorkOrderDetail(props: WorkOrderDetailProps) {
       {/* Relación padre/hija */}
       {isHija && (
         <div
-          onClick={function () { props.onSelectFolio(wo.id_parent_wo as string); }}
+          onClick={function () { props.onSelectFolio((wo.id_parent_wo || (wo as any).annotations?.id_wo_related) as string); }}
           style={{ background: "#eef2ff", border: "1px solid #c7d2fe", borderRadius: "10px", padding: "12px", marginBottom: "12px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4338ca" strokeWidth="2.5">
             <path d="M12 2L22 12L12 22L2 12Z" />
           </svg>
           <span style={{ fontSize: "12px", color: "#4338ca", fontWeight: 600 }}>
-            Ver OT padre: OT-{wo.id_parent_wo}
+            Ver OT padre: OT-{wo.id_parent_wo || (wo as any).annotations?.id_wo_related}
           </span>
         </div>
       )}
@@ -146,20 +151,26 @@ export default function WorkOrderDetail(props: WorkOrderDetailProps) {
         </div>
       )}
 
-      {/* Botón Agregar técnicos */}
-      <div style={{ marginTop: "20px" }}>
-        <button
-          onClick={handleAgregarTecnicos}
-          style={{ width: "100%", padding: "14px", background: "#1e40af", color: "white", border: "none", borderRadius: "10px", fontSize: "14px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-            <circle cx="9" cy="7" r="4" />
-            <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
-            <path d="M19 8v6M22 11h-6" />
-          </svg>
-          + Agregar técnicos
-        </button>
-      </div>
+      {/* Botón Agregar técnicos: solo disponible en OTs padre, no en hijas */}
+      {!isHija ? (
+        <div style={{ marginTop: "20px" }}>
+          <button
+            onClick={handleAgregarTecnicos}
+            style={{ width: "100%", padding: "14px", background: "#1e40af", color: "white", border: "none", borderRadius: "10px", fontSize: "14px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+              <circle cx="9" cy="7" r="4" />
+              <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
+              <path d="M19 8v6M22 11h-6" />
+            </svg>
+            + Agregar técnicos
+          </button>
+        </div>
+      ) : (
+        <div style={{ marginTop: "20px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px", textAlign: "center", fontSize: "12px", color: "#94a3b8" }}>
+          Esta OT ya es una hija — no se le pueden agregar más técnicos
+        </div>
+      )}
     </div>
   );
 }
