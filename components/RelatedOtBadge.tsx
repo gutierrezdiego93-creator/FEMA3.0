@@ -1,8 +1,8 @@
 // components/RelatedOtBadge.tsx
-// Badge "OT relacionada" (ej. "OT-37") que replica la esquina superior
-// izquierda de la cartilla nativa de Fracttal. No reemplaza ni modifica
-// el rombo existente de Padre/Hija: es un elemento independiente que se
-// posiciona en la esquina opuesta.
+// Badge "OT relacionada" (ej. "OT-37"), estilo pastilla igual al de
+// Fracttal nativo. Se usa inline dentro de la misma fila donde vive
+// el rombo de Padre/Hija (no lleva posicionamiento propio; el padre
+// decide dónde colocarlo con flex/gap).
 "use client";
 
 interface RelatedOtBadgeProps {
@@ -16,9 +16,6 @@ export default function RelatedOtBadge({ code }: RelatedOtBadgeProps) {
   return (
     <span
       style={{
-        position: "absolute",
-        top: "10px",
-        left: "10px",
         display: "inline-flex",
         alignItems: "center",
         gap: "3px",
@@ -29,7 +26,7 @@ export default function RelatedOtBadge({ code }: RelatedOtBadgeProps) {
         border: "1px solid #e2e8f0",
         borderRadius: "20px",
         padding: "2px 8px",
-        zIndex: 1,
+        whiteSpace: "nowrap",
       }}
     >
       <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
