@@ -59,6 +59,7 @@ export interface FracttalWorkOrder {
   code_responsible: string;
   has_children: boolean;
   id_parent_wo: string | null;
+  code_wo_related?: string | null;
   duration: number;
   created_by: string;
   [key: string]: string | number | boolean | null | undefined;
