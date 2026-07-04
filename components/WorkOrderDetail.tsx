@@ -41,7 +41,18 @@ export default function WorkOrderDetail(props: WorkOrderDetailProps) {
   const hasChildren = wo.has_children === true || hijas.length > 0;
 
   const handleAgregarTecnicos = function () {
-    router.push("/create-ot?mode=hija&parentFolio=" + encodeURIComponent(wo.wo_folio) + "&taskId=" + wo.id_task + "&desc=" + encodeURIComponent(wo.description || "") + "&item=" + encodeURIComponent(wo.items_log_description || "") + "&itemCode=" + encodeURIComponent(wo.code || "") + "&duration=" + wo.duration + "&excludeCode=" + encodeURIComponent(wo.code_responsible || ""));
+    const params = new URLSearchParams();
+    params.set("parentFolio", wo.wo_folio);
+    params.set("item", wo.items_log_description || "");
+    params.set("itemCode", wo.code || "");
+    params.set("desc", wo.description || "");
+    params.set("type", (wo as any).tasks_log_task_type_main || "");
+    params.set("duration", String(wo.duration || 0));
+    params.set("date", wo.date_maintenance || "");
+    params.set("plan", (wo as any).group_task_description || "");
+    params.set("priority", (wo as any).priorities_description || "");
+    params.set("excludeCode", wo.code_responsible || "");
+    router.push("/assign-technicians?" + params.toString());
   };
 
   return (
