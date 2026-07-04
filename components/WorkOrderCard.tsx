@@ -42,7 +42,7 @@ export default function WorkOrderCard(props: WorkOrderCardProps) {
         boxShadow: props.isSelected ? "0 4px 12px rgba(79,70,229,0.15)" : "0 1px 4px rgba(0,0,0,0.06)",
       }}
     >
-      <RelatedOtBadge code={wo.code_wo_related} />
+      <RelatedOtBadge code={(wo as any).annotations?.code_wo_related} />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
         <span style={{ fontSize: "13px", fontWeight: 700, color: "#1e40af" }}>
           OT-{wo.wo_folio}
