@@ -3,6 +3,7 @@
 "use client";
 
 import { FracttalWorkOrder } from "@/lib/types";
+import RelatedOtBadge from "@/components/RelatedOtBadge";
 
 interface WorkOrderCardProps {
   wo: FracttalWorkOrder;
@@ -31,6 +32,7 @@ export default function WorkOrderCard(props: WorkOrderCardProps) {
     <div
       onClick={props.onClick}
       style={{
+        position: "relative",
         background: props.isSelected ? "#eef2ff" : "#ffffff",
         border: props.isSelected ? "2px solid #4f46e5" : "2px solid #e5e7eb",
         borderRadius: "12px",
@@ -40,6 +42,7 @@ export default function WorkOrderCard(props: WorkOrderCardProps) {
         boxShadow: props.isSelected ? "0 4px 12px rgba(79,70,229,0.15)" : "0 1px 4px rgba(0,0,0,0.06)",
       }}
     >
+      <RelatedOtBadge code={wo.code_wo_related} />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
         <span style={{ fontSize: "13px", fontWeight: 700, color: "#1e40af" }}>
           OT-{wo.wo_folio}
