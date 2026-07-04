@@ -44,7 +44,7 @@ export default function WorkOrderDetail(props: WorkOrderDetailProps) {
     const params = new URLSearchParams();
     params.set("parentFolio", wo.wo_folio);
     params.set("item", wo.items_log_description || "");
-    params.set("itemCode", wo.code || "");
+    params.set("itemCode", (wo as any).code || "");
     params.set("desc", wo.description || "");
     params.set("type", (wo as any).tasks_log_task_type_main || "");
     params.set("duration", String(wo.duration || 0));
