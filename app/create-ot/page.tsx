@@ -338,7 +338,7 @@ function CreateOTContent() {
                     const params = new URLSearchParams();
                     params.set("parentFolio", result.wo_folio);
                     params.set("item", itemDesc);
-                    params.set("itemCode", itemCode);
+                    params.set("itemCode", itemCode || searchParams.get("code") || "");
                     params.set("desc", taskDesc);
                     params.set("type", taskType);
                     params.set("duration", String(duration));
