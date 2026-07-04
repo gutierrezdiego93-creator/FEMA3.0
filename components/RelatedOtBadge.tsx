@@ -6,11 +6,12 @@
 "use client";
 
 interface RelatedOtBadgeProps {
-  code: string | null | undefined;
+  code: string | number | boolean | null | undefined;
 }
 
 export default function RelatedOtBadge({ code }: RelatedOtBadgeProps) {
   if (!code) return null;
+  const label = String(code);
 
   return (
     <span
@@ -37,7 +38,7 @@ export default function RelatedOtBadge({ code }: RelatedOtBadgeProps) {
         <path d="M7 23l-4-4 4-4" />
         <path d="M21 13v2a4 4 0 01-4 4H3" />
       </svg>
-      {code}
+      {label}
     </span>
   );
 }
