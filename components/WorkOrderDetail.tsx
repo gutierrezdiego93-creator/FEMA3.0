@@ -42,7 +42,7 @@ export default function WorkOrderDetail(props: WorkOrderDetailProps) {
   return (
     <div style={{ padding: "24px", height: "100%", overflowY: "auto" }}>
       <div style={{ position: "relative", background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)", borderRadius: "12px", padding: "20px", marginBottom: "16px", color: "white" }}>
-        <RelatedOtBadge code={wo.code_wo_related} />
+        <RelatedOtBadge code={(wo as any).annotations?.code_wo_related} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "4px", fontWeight: 600 }}>ORDEN DE TRABAJO</div>
