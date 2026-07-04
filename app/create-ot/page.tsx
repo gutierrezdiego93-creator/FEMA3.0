@@ -333,8 +333,24 @@ function CreateOTContent() {
                 Finalizar
               </button>
               {!isHija && (
-                <button disabled style={{ background: "#f1f5f9", color: "#94a3b8", border: "2px solid #e2e8f0", borderRadius: "10px", padding: "12px 28px", fontSize: "14px", fontWeight: 700, cursor: "not-allowed" }}>
-                  + Agregar técnicos (desde el dashboard)
+                <button
+                  onClick={function () {
+                    const params = new URLSearchParams();
+                    params.set("parentFolio", result.wo_folio);
+                    params.set("item", itemDesc);
+                    params.set("itemCode", itemCode);
+                    params.set("desc", taskDesc);
+                    params.set("type", taskType);
+                    params.set("duration", String(duration));
+                    params.set("date", searchParams.get("date") || "");
+                    params.set("plan", searchParams.get("plan") || "");
+                    params.set("priority", searchParams.get("priority") || "");
+                    params.set("excludeCode", responsible);
+                    router.push("/assign-technicians?" + params.toString());
+                  }}
+                  style={{ background: "white", color: "#1e40af", border: "2px solid #1e40af", borderRadius: "10px", padding: "12px 28px", fontSize: "14px", fontWeight: 700, cursor: "pointer" }}
+                >
+                  + Agregar técnicos
                 </button>
               )}
             </div>
