@@ -16,8 +16,9 @@ export async function GET() {
     );
 
     if (!response.ok) {
+      const errorText = await response.text();
       return NextResponse.json(
-        { error: "Error de Fracttal: " + response.status },
+        { error: "Error de Fracttal: " + response.status, detail: errorText, tokenPreview: token ? token.slice(0, 20) + "..." : null },
         { status: response.status }
       );
     }
@@ -36,6 +37,6 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data: admins });
   } catch (error) {
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+    return NextResponse.json({ error: "Error interno", detail: String(error) }, { status: 500 });
   }
 }
